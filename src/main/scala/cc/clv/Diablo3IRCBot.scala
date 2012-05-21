@@ -7,7 +7,7 @@ import java.net.URL
 object Diablo3IRCBot extends App {
     case class MaintenanceInfo(id: String, title: String, url: String)
     
-    def getMaintenanceInfoList()(implicit url:java.net.URL) = {
+    def getMaintenanceInfoList()(implicit url:URL) = {
         val xml = XML.load(url)
         val table = (xml \\ "table" filter(table => (table \ "@id").text == "posts"))(0)
         val posts = table \\ "tr" \\ "td" filter(td => (td \ "@class").text == "post-title") map(td => td \\ "a")
