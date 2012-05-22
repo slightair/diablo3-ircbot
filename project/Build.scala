@@ -16,9 +16,15 @@ object ProjectBuild extends Build {
         // test
         "org.specs2" %% "specs2" % "1.9" % "test",
             
-        //log
+        // log
         "org.clapper" %% "grizzled-slf4j" % "0.6.8",
-        "ch.qos.logback" % "logback-classic" % "1.0.1"
+        "ch.qos.logback" % "logback-classic" % "1.0.1",
+        
+        // config
+        "com.twitter" %% "util-eval" % "3.0.0",
+        
+        // irc
+        "pircbot" % "pircbot" % "1.5.0"
       )
       // add other settings here
     )
