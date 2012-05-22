@@ -15,3 +15,4 @@ project/plugins/project/
 # others
 src/main/resources/cc/clv/diablo3ircbot/service_status.html
 src/test/resources/cc/clv/diablo3ircbot/service_status.html
+config/config.scala

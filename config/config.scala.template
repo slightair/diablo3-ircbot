@@ -1,0 +1,10 @@
+import cc.clv.diablo3ircbot.conf.Diablo3IRCBotConfig
+
+object Diablo3IRCBotConfig {
+    val ircUserName = "dia3ircbot"
+    val ircLoginName = "dia3ircbot"
+    val ircEncoding = "UTF-8"
+    val ircServerHost = "chat.freenode.net"
+    val ircServerPort = 6667
+    val ircJoinChannel = "#dia3ircbot"
+}
