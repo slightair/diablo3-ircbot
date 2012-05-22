@@ -13,5 +13,5 @@ project/plugins/project/
 .scala_dependencies
 
 # others
-src/main/resources/cc/clv/service_status.html
-src/test/resources/cc/clv/service_status.html
+src/main/resources/cc/clv/diablo3ircbot/service_status.html
+src/test/resources/cc/clv/diablo3ircbot/service_status.html
