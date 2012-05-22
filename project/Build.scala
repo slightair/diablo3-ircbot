@@ -12,6 +12,7 @@ object ProjectBuild extends Build {
       version := "0.1-SNAPSHOT",
       scalacOptions ++= Seq("-deprecation"),
       scalaVersion := "2.9.1",
+      resolvers += "twitter-repo" at "http://maven.twttr.com",
       libraryDependencies ++= Seq(
         // test
         "org.specs2" %% "specs2" % "1.9" % "test",
