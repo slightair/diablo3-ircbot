@@ -1,7 +1,6 @@
-package cc.clv
+package cc.clv.diablo3ircbot
 
 import org.specs2.mutable._
-
 import Diablo3IRCBot._
 
 object Diablo3IRCBotSpec extends Specification {

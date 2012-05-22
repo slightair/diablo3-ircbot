@@ -1,4 +1,4 @@
-package cc.clv
+package cc.clv.diablo3ircbot
 
 import scala.io.Source
 import scala.xml.XML
