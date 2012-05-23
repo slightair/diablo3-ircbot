@@ -5,13 +5,11 @@ import org.jibble.pircbot._
 
 class IRCBot extends PircBot {
     def init(config: IRCBotConfig) {
-        println(config.userName)
-        
         setName(config.userName)
         setLogin(config.loginName)
         setEncoding(config.encoding)
         connect(config.serverHost, config.serverPort)
-        joinChannel(config.joinChannel)
+        for (channel <- config.joinChannels) joinChannel(channel)
     }
     
     override def onConnect {

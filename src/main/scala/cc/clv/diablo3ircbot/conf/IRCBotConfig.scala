@@ -6,5 +6,5 @@ trait IRCBotConfig {
     val encoding: String
     val serverHost: String
     val serverPort: Int
-    val joinChannel: String
+    val joinChannels: List[String]
 }

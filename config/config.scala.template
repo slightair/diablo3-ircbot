@@ -7,6 +7,6 @@ new Diablo3IRCBotConfig {
         val encoding = "UTF-8"
         val serverHost = "chat.freenode.net"
         val serverPort = 6667
-        val joinChannel = "#dia3ircbot"
+        val joinChannels = List("#dia3ircbot")
     }
 }
