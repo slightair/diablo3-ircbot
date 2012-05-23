@@ -29,6 +29,11 @@ object Diablo3IRCBot extends App {
     
     def printUsage = println("usage: diablo3ircbot config_file")
     
+    def startIRCBot(config: Diablo3IRCBotConfig) = {
+        val bot = new IRCBot
+        bot.init(config.ircBotConfig)
+    }
+    
     parseOptions(args) match {
         case None => {
             printUsage
@@ -43,7 +48,7 @@ object Diablo3IRCBot extends App {
             val eval = new Eval()
             val config = eval[Diablo3IRCBotConfig](configFile)
             
-            println(config.ircServerHost)
+            startIRCBot(config)
         }
     }
 }
