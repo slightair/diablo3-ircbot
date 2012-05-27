@@ -11,10 +11,4 @@ class IRCBot extends PircBot {
         connect(config.serverHost, config.serverPort)
         for (channel <- config.joinChannels) joinChannel(channel)
     }
-    
-    override def onConnect {
-        println("connected")
-        sendNotice("#clvcctest", "aaaaa")
-    }
 }
-    

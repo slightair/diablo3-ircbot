@@ -9,4 +9,6 @@ new Diablo3IRCBotConfig {
         val serverPort = 6667
         val joinChannels = List("#dia3ircbot")
     }
+    val postedInfoDBFile = "postedInfo.db"
+    val getMaintenanceInfoInterval = 1000 * 60 * 5
 }
