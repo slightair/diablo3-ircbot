@@ -9,7 +9,7 @@ import cc.clv.diablo3ircbot.conf._
 import org.jibble.pircbot._
 
 class Diablo3IRCBot(val config:Diablo3IRCBotConfig) extends PircBot {
-    case class MaintenanceInfo(id: String, title: String, url: String)
+    case class MaintenanceInfo(id: String, title: String, url: String, description: String)
     
     var joinedChannels: Int = 0
     
@@ -19,15 +19,17 @@ class Diablo3IRCBot(val config:Diablo3IRCBotConfig) extends PircBot {
     
     def getMaintenanceInfoList()(implicit url:URL) = {
         val xml = XML.load(url)
-        val table = (xml \\ "table" filter(table => (table \ "@id").text == "posts"))(0)
-        val posts = table \\ "tr" \\ "td" filter(td => (td \ "@class").text == "post-title") map(td => td \\ "a")
+        val table = (xml \\ "table" filter(table => (table \ "@id").text == "posts")).head
+        val posts = table \\ "tr" \\ "td" filter(td => (td \ "@class").text == "post-title")
         
         posts.map(post => {
-            val id = (post \ "@href").text.drop("../topic/".size)
-            val title = post.text.trim
+            val anchor = post \\ "a"
+            val id = (anchor \ "@href").text.drop("../topic/".size)
+            val title = anchor.text.trim
             val url = "http://us.battle.net/d3/en/forum/topic/" + id
+            val description = (post \\ "div" filter(div => (div \ "@class").text == "tt_detail")).head.text.trim
             
-            new MaintenanceInfo(id, title, url)
+            new MaintenanceInfo(id, title, url, description)
         })
     }
     
@@ -47,9 +49,12 @@ class Diablo3IRCBot(val config:Diablo3IRCBotConfig) extends PircBot {
             for (info <- getMaintenanceInfoList) {
                 postedInfoIdList.indexOf(info.id) match {
                     case -1 => {
+                        val title = info.title + " " + info.url
                         postedInfoIdList = postedInfoIdList :+ info.id
-                        val notice = info.title + " -> " + info.url
-                        for (channel <- config.ircBotConfig.joinChannels) sendNotice(channel, notice)
+                        for (channel <- config.ircBotConfig.joinChannels) {
+                            sendNotice(channel, title)
+                            sendNotice(channel, info.description)
+                        }
                         out.println(info.id)
                     }
                     case _ =>
