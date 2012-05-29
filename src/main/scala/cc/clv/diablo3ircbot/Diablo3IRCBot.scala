@@ -3,14 +3,19 @@ package cc.clv.diablo3ircbot
 import scala.io.Source
 import scala.xml.XML
 import java.net.URL
-import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintWriter
-import com.twitter.util.Eval
-import cc.clv.diablo3ircbot.conf.Diablo3IRCBotConfig
+import cc.clv.diablo3ircbot.conf._
+import org.jibble.pircbot._
 
-object Diablo3IRCBot extends App {
+class Diablo3IRCBot(val config:Diablo3IRCBotConfig) extends PircBot {
     case class MaintenanceInfo(id: String, title: String, url: String)
+    
+    var joinedChannels: Int = 0
+    
+    setName(config.ircBotConfig.userName)
+    setLogin(config.ircBotConfig.loginName)
+    setEncoding(config.ircBotConfig.encoding)
     
     def getMaintenanceInfoList()(implicit url:URL) = {
         val xml = XML.load(url)
@@ -26,19 +31,8 @@ object Diablo3IRCBot extends App {
         })
     }
     
-    def parseOptions(args: Array[String]) = args.size match {
-        case 1 => Option(args.last)
-        case _ => None
-    }
-    
-    def printUsage = println("usage: diablo3ircbot config_file")
-    
-    def startIRCBot(config: Diablo3IRCBotConfig) = {
-        // val bot = new IRCBot
-        // bot.init(config.ircBotConfig)
-        
-        implicit var url = getClass.getResource("./service_status.html")
-        // implicit var url = new URL("http://us.battle.net/d3/en/forum/5394512/")
+    def startWatcher = {
+        implicit var url = new URL("http://us.battle.net/d3/en/forum/5394512/")
         
         var postedInfoIdList = try {
             Source.fromFile(config.postedInfoDBFile).getLines.toList
@@ -54,7 +48,8 @@ object Diablo3IRCBot extends App {
                 postedInfoIdList.indexOf(info.id) match {
                     case -1 => {
                         postedInfoIdList = postedInfoIdList :+ info.id
-                        println(info)
+                        val notice = info.title + " -> " + info.url
+                        for (channel <- config.ircBotConfig.joinChannels) sendNotice(channel, notice)
                         out.println(info.id)
                     }
                     case _ =>
@@ -62,22 +57,17 @@ object Diablo3IRCBot extends App {
             }
             out.flush
             
-            // Thread.sleep(config.getMaintenanceInfoInterval)
-            Thread.sleep(500)
+            Thread.sleep(config.getMaintenanceInfoInterval)
         }
     }
     
-    parseOptions(args) match {
-        case None => {
-            printUsage
-        }
-        case Some(configFilePath) => {
-            val configFileName = args(0)
-            val configFile = new File(configFileName)
-            val eval = new Eval()
-            val config = eval[Diablo3IRCBotConfig](configFile)
-            
-            startIRCBot(config)
-        }
+    def init = {
+        connect(config.ircBotConfig.serverHost, config.ircBotConfig.serverPort)
+        for (channel <- config.ircBotConfig.joinChannels) joinChannel(channel)
+    }
+    
+    override def onJoin(channel:String, sender:String, login:String, hostname:String) = {
+        joinedChannels += 1
+        if (joinedChannels == config.ircBotConfig.joinChannels.size) startWatcher
     }
 }
