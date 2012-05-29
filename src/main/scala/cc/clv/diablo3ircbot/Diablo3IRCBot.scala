@@ -2,6 +2,7 @@ package cc.clv.diablo3ircbot
 
 import scala.io.Source
 import scala.xml.XML
+import scala.concurrent.ops._
 import java.net.URL
 import java.io.FileOutputStream
 import java.io.PrintWriter
@@ -45,24 +46,26 @@ class Diablo3IRCBot(val config:Diablo3IRCBotConfig) extends PircBot {
         
         val out = new PrintWriter(new FileOutputStream(config.postedInfoDBFile, true))
         
-        while (true) {
-            for (info <- getMaintenanceInfoList) {
-                postedInfoIdList.indexOf(info.id) match {
-                    case -1 => {
-                        val title = info.title + " " + info.url
-                        postedInfoIdList = postedInfoIdList :+ info.id
-                        for (channel <- config.ircBotConfig.joinChannels) {
-                            sendNotice(channel, title)
-                            sendNotice(channel, info.description)
+        spawn {
+            while (true) {
+                for (info <- getMaintenanceInfoList) {
+                    postedInfoIdList.indexOf(info.id) match {
+                        case -1 => {
+                            val title = info.title + " " + info.url
+                            postedInfoIdList = postedInfoIdList :+ info.id
+                            for (channel <- config.ircBotConfig.joinChannels) {
+                                sendNotice(channel, title)
+                                sendNotice(channel, info.description)
+                            }
+                            out.println(info.id)
                         }
-                        out.println(info.id)
+                        case _ =>
                     }
-                    case _ =>
                 }
+                out.flush
+                
+                Thread.sleep(config.getMaintenanceInfoInterval)
             }
-            out.flush
-            
-            Thread.sleep(config.getMaintenanceInfoInterval)
         }
     }
     
